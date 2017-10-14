@@ -1,0 +1,31 @@
+{
+  "name": "hapi-syslog-plugin",
+  "version": "1.0.0",
+  "description": "Hapi syslog plugin.  Supporting both UDP and TCP",
+  "main": "lib/index.js",
+  "repository": "git://github.com/visualjeff/hapi-syslog-plugin",
+  "bug": {
+    "url": "https://github.com/visualjeff/hapi-syslog-plugin/issues"
+  },
+  "keywords": [
+    "hapi",
+    "syslog",
+    "plugin"
+  ],
+  "engines": {
+    "node": ">=6.8.0"
+  },
+  "dependencies": {
+    "joi": "^11.1.1"
+  },
+  "devDependencies": {
+    "code": "^5.1.0",
+    "hapi": "^16.1.0",
+    "lab": "^14.3.1"
+  },
+  "scripts": {
+    "test": "lab -r console -t 100 -a code -L",
+    "test-cov-html": "lab -r html -o coverage.html -a code -L"
+  },
+  "license": "MIT"
+}
