@@ -6,7 +6,7 @@ hapi-syslog-plugin
 [![bitHound Dependencies](https://www.bithound.io/github/visualjeff/hapi-syslog-plugin/badges/dependencies.svg)](https://www.bithound.io/github/visualjeff/hapi-syslog-plugin/master/dependencies/npm)
 [![bitHound Code](https://www.bithound.io/github/visualjeff/hapi-syslog-plugin/badges/code.svg)](https://www.bithound.io/github/visualjeff/hapi-syslog-plugin)
 
-> hapi plugin for routing hapi logging statements from the server and/or requests to a system's syslog.
+> Hapi plugin for routing logging statements from the server and/or the request object to syslog.
 
 
 ## Usage
