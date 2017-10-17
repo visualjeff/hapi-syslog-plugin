@@ -1,8 +1,8 @@
 'use strict';
 
 const Hapi = require('hapi');
-const Fs = require('fs');
-
+const hapiSyslogPlugin = require('../');
+const applicationRoutes = require('./routes/applicationRoutes');
 const server = new Hapi.Server();
 
 //Configure http
@@ -13,9 +13,9 @@ server.connection({
 
 //Register the plugin and a simple hello world route
 server.register([{
-    register: require('./routes/applicationRoutes')
+    register: applicationRoutes
 },{
-    register: require('../'),
+    register: hapiSyslogPlugin,
     options: {
     }
 }], (err) => {

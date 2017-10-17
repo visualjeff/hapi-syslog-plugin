@@ -12,8 +12,9 @@ const routes = {
                 description: 'Route is website root'
             },
             handler: (request, reply) => {
+
                 request.log(['info'],'A request has been invoked!');
-		reply('Hello world!');
+                reply('Hello world!');
             }
         });
         next();
