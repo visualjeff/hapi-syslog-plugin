@@ -4,7 +4,8 @@ const Code = require('code');
 const Hapi = require('hapi');
 const Lab = require('lab');
 const Plugin = require('../');
-
+const Net = require('net');
+const Fs = require('fs');
 // Declare internals
 const internals = {};
 
@@ -16,6 +17,62 @@ const expect = Code.expect;
 
 
 describe('Hapi logging to syslog', () => {
+
+    it('Default configurations passed schema validation', (done) => {
+        const server = new Hapi.Server();
+        const receiver = Net.createServer((client) => {
+            client.on('data', (data) => {
+                const message = data.toString();
+                expect(message.search('Server listening at')).to.not.equal(-1);
+                receiver.unref();
+                Fs.unlink('/tmp/echo.sock', function(err) {
+                    if (err) return console.log(err);
+                });
+                done();
+            });
+        });
+        receiver.on('error', (err) => {
+            throw err;
+        });
+        receiver.listen('/tmp/echo.sock');
+
+        //Configure http
+        server.connection({
+            host: '0.0.0.0',
+            port: 3000
+        });
+
+        server.register({
+            register: Plugin,
+            options: {
+                target: 'localhost',
+                syslogHostname: 'localhost',
+                transport: 1,
+                port: '/tmp/echo.sock',
+                tcpTimeout: 5000,
+                rfc3164: false,
+                appName: 'test',
+                dateFormatter: (date) => date.toISOString(),
+                facility: 23,
+                severity: 7
+            }
+        }, (err) => {
+            expect(err).to.be.undefined();
+        });
+
+        server.start((err) => {
+            if (err) {
+                throw err;
+            }
+
+            server.connections.forEach((connection) => {
+                const protocol = connection.info.protocol;
+                const host = connection.info.host;
+                const port = connection.info.port;
+                server.log(['info', 'server'], `Server listening at ${protocol}://${host}:${port}`);
+            });
+        });
+    });
 
     it('Default configurations passed schema validation', (done) => {
         const server = new Hapi.Server();
@@ -48,14 +105,14 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 'localhost',
-		syslogHostname: 'localhost',
-		transport: 'Tcp',
-		port: 514,
-		tcpTimeout: 5000,
-		rfc3164: true,
-		appName: 'test',
-		dateFormatter: (d) => date.toISOString(),
-		facility: 23,
+                syslogHostname: 'localhost',
+                transport: 1,
+                port: 514,
+                tcpTimeout: 5000,
+                rfc3164: true,
+                appName: 'test',
+                dateFormatter: (d) => date.toISOString(),
+                facility: 23,
                 severity: 6
             }
         }, (err) => {
@@ -77,14 +134,14 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 99,
-		syslogHostname: 'localhost',
-		transport: 'Tcp',
-		port: 514,
-		tcpTimeout: 5000,
-		rfc3164: true,
-		appName: 'test',
-		dateFormatter: (d) => date.toISOString(),
-		facility: 23,
+                syslogHostname: 'localhost',
+                transport: 1,
+                port: 514,
+                tcpTimeout: 5000,
+                rfc3164: true,
+                appName: 'test',
+                dateFormatter: (d) => date.toISOString(),
+                facility: 23,
                 severity: 6
             }
         }, (err) => {
@@ -108,14 +165,14 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 'not a valid hostname',
-		syslogHostname: 'localhost',
-		transport: 'Tcp',
-		port: 514,
-		tcpTimeout: 5000,
-		rfc3164: true,
-		appName: 'test',
-		dateFormatter: (d) => date.toISOString(),
-		facility: 23,
+                syslogHostname: 'localhost',
+                transport: 1,
+                port: 514,
+                tcpTimeout: 5000,
+                rfc3164: true,
+                appName: 'test',
+                dateFormatter: (d) => date.toISOString(),
+                facility: 23,
                 severity: 6
             }
         }, (err) => {
@@ -139,14 +196,14 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 'localhost',
-		syslogHostname: 98,
-		transport: 'Tcp',
-		port: 514,
-		tcpTimeout: 5000,
-		rfc3164: true,
-		appName: 'test',
-		dateFormatter: (d) => date.toISOString(),
-		facility: 23,
+                syslogHostname: 98,
+                transport: 1,
+                port: 514,
+                tcpTimeout: 5000,
+                rfc3164: true,
+                appName: 'test',
+                dateFormatter: (d) => date.toISOString(),
+                facility: 23,
                 severity: 6
             }
         }, (err) => {
@@ -170,14 +227,14 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 'localhost',
-		syslogHostname: 'not a valid hostname',
-		transport: 'Tcp',
-		port: 514,
-		tcpTimeout: 5000,
-		rfc3164: true,
-		appName: 'test',
-		dateFormatter: (d) => date.toISOString(),
-		facility: 23,
+                syslogHostname: 'not a valid hostname',
+                transport: 1,
+                port: 514,
+                tcpTimeout: 5000,
+                rfc3164: true,
+                appName: 'test',
+                dateFormatter: (d) => date.toISOString(),
+                facility: 23,
                 severity: 6
             }
         }, (err) => {
@@ -187,7 +244,7 @@ describe('Hapi logging to syslog', () => {
         });
         done();
     });
-    
+
     it('Custom parameters fail schema validation', (done) => {
         const server = new Hapi.Server();
 
@@ -201,82 +258,20 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 'localhost',
-		syslogHostname: 'localhost',
-		transport: 9,
-		port: 514,
-		tcpTimeout: 5000,
-		rfc3164: true,
-		appName: 'test',
-		dateFormatter: (d) => date.toISOString(),
-		facility: 23,
+                syslogHostname: 'localhost',
+                transport: 'abc',
+                port: 514,
+                tcpTimeout: 5000,
+                rfc3164: true,
+                appName: 'test',
+                dateFormatter: (d) => date.toISOString(),
+                facility: 23,
                 severity: 6
             }
         }, (err) => {
             expect(err).to.be.an.instanceof(Error);
             expect(err.name).to.equal('ValidationError');
-            expect(err.details[0].message).to.equal('"transport" must be a string');
-        });
-        done();
-    });
-    
-    it('Custom parameters fail schema validation', (done) => {
-        const server = new Hapi.Server();
-
-        //Configure http
-        server.connection({
-            host: '0.0.0.0',
-            port: 3000
-        });
-
-        server.register({
-            register: Plugin,
-            options: {
-                target: 'localhost',
-		syslogHostname: 'localhost',
-		transport: 'Udp',
-		port: 'abc',
-		tcpTimeout: 5000,
-		rfc3164: true,
-		appName: 'test',
-		dateFormatter: (d) => date.toISOString(),
-		facility: 23,
-                severity: 6
-            }
-        }, (err) => {
-            expect(err).to.be.an.instanceof(Error);
-            expect(err.name).to.equal('ValidationError');
-            expect(err.details[0].message).to.equal('"port" must be a number');
-        });
-        done();
-    });
-    
-    it('Custom parameters fail schema validation', (done) => {
-        const server = new Hapi.Server();
-
-        //Configure http
-        server.connection({
-            host: '0.0.0.0',
-            port: 3000
-        });
-
-        server.register({
-            register: Plugin,
-            options: {
-                target: 'localhost',
-		syslogHostname: 'localhost',
-		transport: 'Udp',
-		port: 1.2,
-		tcpTimeout: 5000,
-		rfc3164: true,
-		appName: 'test',
-		dateFormatter: (d) => date.toISOString(),
-		facility: 23,
-                severity: 6
-            }
-        }, (err) => {
-            expect(err).to.be.an.instanceof(Error);
-            expect(err.name).to.equal('ValidationError');
-            expect(err.details[0].message).to.equal('"port" must be an integer');
+            expect(err.details[0].message).to.equal('"transport" must be a number');
         });
         done();
     });
@@ -294,14 +289,45 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 'localhost',
-		syslogHostname: 'localhost',
-		transport: 'Udp',
-		port: 514,
-		tcpTimeout: 'abc',
-		rfc3164: true,
-		appName: 'test',
-		dateFormatter: (d) => date.toISOString(),
-		facility: 23,
+                syslogHostname: 'localhost',
+                transport: 1.2,
+                port: 514,
+                tcpTimeout: 5000,
+                rfc3164: true,
+                appName: 'test',
+                dateFormatter: (d) => date.toISOString(),
+                facility: 23,
+                severity: 6
+            }
+        }, (err) => {
+            expect(err).to.be.an.instanceof(Error);
+            expect(err.name).to.equal('ValidationError');
+            expect(err.details[0].message).to.equal('"transport" must be an integer');
+        });
+        done();
+    });
+
+    it('Custom parameters fail schema validation', (done) => {
+        const server = new Hapi.Server();
+
+        //Configure http
+        server.connection({
+            host: '0.0.0.0',
+            port: 3000
+        });
+
+        server.register({
+            register: Plugin,
+            options: {
+                target: 'localhost',
+                syslogHostname: 'localhost',
+                transport: 2,
+                port: 514,
+                tcpTimeout: 'abc',
+                rfc3164: true,
+                appName: 'test',
+                dateFormatter: (d) => date.toISOString(),
+                facility: 23,
                 severity: 6
             }
         }, (err) => {
@@ -325,14 +351,14 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 'localhost',
-		syslogHostname: 'localhost',
-		transport: 'Udp',
-		port: 514,
-		tcpTimeout: 1.2,
-		rfc3164: true,
-		appName: 'test',
-		dateFormatter: (d) => date.toISOString(),
-		facility: 23,
+                syslogHostname: 'localhost',
+                transport: 2,
+                port: 514,
+                tcpTimeout: 1.2,
+                rfc3164: true,
+                appName: 'test',
+                dateFormatter: (d) => date.toISOString(),
+                facility: 23,
                 severity: 6
             }
         }, (err) => {
@@ -356,14 +382,14 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 'localhost',
-		syslogHostname: 'localhost',
-		transport: 'Udp',
-		port: 514,
-		tcpTimeout: 5000,
-		rfc3164: 'astring',
-		appName: 'test',
-		dateFormatter: (d) => date.toISOString(),
-		facility: 23,
+                syslogHostname: 'localhost',
+                transport: 2,
+                port: 514,
+                tcpTimeout: 5000,
+                rfc3164: 'astring',
+                appName: 'test',
+                dateFormatter: (d) => date.toISOString(),
+                facility: 23,
                 severity: 6
             }
         }, (err) => {
@@ -387,14 +413,14 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 'localhost',
-		syslogHostname: 'localhost',
-		transport: 'Udp',
-		port: 514,
-		tcpTimeout: 5000,
-		rfc3164: 123,
-		appName: 'test',
-		dateFormatter: (d) => date.toISOString(),
-		facility: 23,
+                syslogHostname: 'localhost',
+                transport: 2,
+                port: 514,
+                tcpTimeout: 5000,
+                rfc3164: 123,
+                appName: 'test',
+                dateFormatter: (d) => date.toISOString(),
+                facility: 23,
                 severity: 6
             }
         }, (err) => {
@@ -404,7 +430,7 @@ describe('Hapi logging to syslog', () => {
         });
         done();
     });
-    
+
     it('Custom parameters fail schema validation', (done) => {
         const server = new Hapi.Server();
 
@@ -418,14 +444,14 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 'localhost',
-		syslogHostname: 'localhost',
-		transport: 'Udp',
-		port: 514,
-		tcpTimeout: 5000,
-		rfc3164: true,
-		appName: 123,
-		dateFormatter: (d) => date.toISOString(),
-		facility: 23,
+                syslogHostname: 'localhost',
+                transport: 22,
+                port: 514,
+                tcpTimeout: 5000,
+                rfc3164: true,
+                appName: 123,
+                dateFormatter: (d) => date.toISOString(),
+                facility: 23,
                 severity: 6
             }
         }, (err) => {
@@ -449,14 +475,14 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 'localhost',
-		syslogHostname: 'localhost',
-		transport: 'Udp',
-		port: 514,
-		tcpTimeout: 5000,
-		rfc3164: true,
-		appName: true,
-		dateFormatter: (d) => date.toISOString(),
-		facility: 23,
+                syslogHostname: 'localhost',
+                transport: 2,
+                port: 514,
+                tcpTimeout: 5000,
+                rfc3164: true,
+                appName: true,
+                dateFormatter: (d) => date.toISOString(),
+                facility: 23,
                 severity: 6
             }
         }, (err) => {
@@ -466,7 +492,7 @@ describe('Hapi logging to syslog', () => {
         });
         done();
     });
-    
+
     it('Custom parameters fail schema validation', (done) => {
         const server = new Hapi.Server();
 
@@ -480,14 +506,14 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 'localhost',
-		syslogHostname: 'localhost',
-		transport: 'Udp',
-		port: 514,
-		tcpTimeout: 5000,
-		rfc3164: true,
-		appName: 'test',
-		dateFormatter: '(d) => date.toISOString()',
-		facility: 23,
+                syslogHostname: 'localhost',
+                transport: 2,
+                port: 514,
+                tcpTimeout: 5000,
+                rfc3164: true,
+                appName: 'test',
+                dateFormatter: '(d) => date.toISOString()',
+                facility: 23,
                 severity: 6
             }
         }, (err) => {
@@ -497,7 +523,7 @@ describe('Hapi logging to syslog', () => {
         });
         done();
     });
-    
+
     it('Custom parameters fail schema validation', (done) => {
         const server = new Hapi.Server();
 
@@ -511,14 +537,14 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 'localhost',
-		syslogHostname: 'localhost',
-		transport: 'Udp',
-		port: 514,
-		tcpTimeout: 5000,
-		rfc3164: true,
-		appName: 'test',
-		dateFormatter: (d) => date.toISOString(),
-		facility: 'info',
+                syslogHostname: 'localhost',
+                transport: 2,
+                port: 514,
+                tcpTimeout: 5000,
+                rfc3164: true,
+                appName: 'test',
+                dateFormatter: (d) => date.toISOString(),
+                facility: 'info',
                 severity: 6
             }
         }, (err) => {
@@ -528,7 +554,7 @@ describe('Hapi logging to syslog', () => {
         });
         done();
     });
-    
+
     it('Custom parameters fail schema validation', (done) => {
         const server = new Hapi.Server();
 
@@ -542,14 +568,14 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 'localhost',
-		syslogHostname: 'localhost',
-		transport: 'Udp',
-		port: 514,
-		tcpTimeout: 5000,
-		rfc3164: true,
-		appName: 'test',
-		dateFormatter: (d) => date.toISOString(),
-		facility: 1.2,
+                syslogHostname: 'localhost',
+                transport: 2,
+                port: 514,
+                tcpTimeout: 5000,
+                rfc3164: true,
+                appName: 'test',
+                dateFormatter: (d) => date.toISOString(),
+                facility: 1.2,
                 severity: 6
             }
         }, (err) => {
@@ -559,7 +585,7 @@ describe('Hapi logging to syslog', () => {
         });
         done();
     });
-    
+
     it('Custom parameters fail schema validation', (done) => {
         const server = new Hapi.Server();
 
@@ -573,14 +599,14 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 'localhost',
-		syslogHostname: 'localhost',
-		transport: 'Udp',
-		port: 514,
-		tcpTimeout: 5000,
-		rfc3164: true,
-		appName: 'test',
-		dateFormatter: (d) => date.toISOString(),
-		facility: 23,
+                syslogHostname: 'localhost',
+                transport: 2,
+                port: 514,
+                tcpTimeout: 5000,
+                rfc3164: true,
+                appName: 'test',
+                dateFormatter: (d) => date.toISOString(),
+                facility: 23,
                 severity: 'error'
             }
         }, (err) => {
@@ -590,7 +616,7 @@ describe('Hapi logging to syslog', () => {
         });
         done();
     });
-    
+
     it('Custom parameters fail schema validation', (done) => {
         const server = new Hapi.Server();
 
@@ -604,14 +630,14 @@ describe('Hapi logging to syslog', () => {
             register: Plugin,
             options: {
                 target: 'localhost',
-		syslogHostname: 'localhost',
-		transport: 'Udp',
-		port: 514,
-		tcpTimeout: 5000,
-		rfc3164: true,
-		appName: 'test',
-		dateFormatter: (d) => date.toISOString(),
-		facility: 23,
+                syslogHostname: 'localhost',
+                transport: 2,
+                port: 514,
+                tcpTimeout: 5000,
+                rfc3164: true,
+                appName: 'test',
+                dateFormatter: (d) => date.toISOString(),
+                facility: 23,
                 severity: 6.2
             }
         }, (err) => {
@@ -621,7 +647,7 @@ describe('Hapi logging to syslog', () => {
         });
         done();
     });
-    
+
     it('schema validation fails because of extra unexpected option value', (done) => {
         const server = new Hapi.Server();
 
