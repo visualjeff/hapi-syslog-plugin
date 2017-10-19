@@ -1,3 +1,4 @@
+/*eslint no-unused-vars: ["error", { "varsIgnorePattern": "internals" }]*/
 'use strict';
 
 const Code = require('code');
@@ -27,8 +28,8 @@ describe('Hapi logging to syslog', () => {
                 expect(message.search('test')).to.not.equal(-1);
                 expect(message.search('Server listening at')).to.not.equal(-1);
                 receiver.close();
-		receiver.unref();
-		server.stop();
+                receiver.unref();
+                server.stop();
                 done();
             });
         });
@@ -81,9 +82,9 @@ describe('Hapi logging to syslog', () => {
                 const message = data.toString();
                 expect(message.search('test')).to.equal(-1);
                 expect(message.search('Server listening at')).to.not.equal(-1);
-		receiver.close();
+                receiver.close();
                 receiver.unref();
-		server.stop();
+                server.stop();
                 done();
             });
         });
@@ -130,15 +131,15 @@ describe('Hapi logging to syslog', () => {
     });
     
     it('Default configurations passed schema validation', (done) => {
-	const server = new Hapi.Server();
+        const server = new Hapi.Server();
         const receiver = Net.createServer((client) => {
             client.on('data', (data) => {
                 const message = data.toString();
                 expect(message.search('2017-10-19T18:01:07.499Z')).to.not.equal(-1);
                 expect(message.search('Server listening at')).to.not.equal(-1);
                 receiver.close();
-		receiver.unref();
-		server.stop();
+                receiver.unref();
+                server.stop();
                 done();
             });
         });
@@ -162,7 +163,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: false,
                 appName: 'test',
-                dateFormatter: (date) => '2017-10-19T18:01:07.499Z',
+                dateFormatter: () => '2017-10-19T18:01:07.499Z',
                 facility: 23,
                 severity: 7
             }
@@ -219,7 +220,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: true,
                 appName: 'test',
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 23,
                 severity: 6
             }
@@ -247,7 +248,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: true,
                 appName: 'test',
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 23,
                 severity: 6
             }
@@ -277,7 +278,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: true,
                 appName: 'test',
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 23,
                 severity: 6
             }
@@ -307,7 +308,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: true,
                 appName: 'test',
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 23,
                 severity: 6
             }
@@ -337,7 +338,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: true,
                 appName: 'test',
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 23,
                 severity: 6
             }
@@ -367,7 +368,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: true,
                 appName: 'test',
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 23,
                 severity: 6
             }
@@ -397,7 +398,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: true,
                 appName: 'test',
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 23,
                 severity: 6
             }
@@ -427,7 +428,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: true,
                 appName: 'test',
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 23,
                 severity: 6
             }
@@ -457,7 +458,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 'abc',
                 rfc3164: true,
                 appName: 'test',
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 23,
                 severity: 6
             }
@@ -487,7 +488,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 1.2,
                 rfc3164: true,
                 appName: 'test',
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 23,
                 severity: 6
             }
@@ -517,7 +518,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: 'astring',
                 appName: 'test',
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 23,
                 severity: 6
             }
@@ -547,7 +548,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: 123,
                 appName: 'test',
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 23,
                 severity: 6
             }
@@ -577,7 +578,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: true,
                 appName: 123,
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 23,
                 severity: 6
             }
@@ -607,7 +608,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: true,
                 appName: true,
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 23,
                 severity: 6
             }
@@ -637,7 +638,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: true,
                 appName: 'test',
-                dateFormatter: '(d) => date.toISOString()',
+                dateFormatter: '(date) => date.toISOString()',
                 facility: 23,
                 severity: 6
             }
@@ -667,7 +668,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: true,
                 appName: 'test',
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 'info',
                 severity: 6
             }
@@ -697,7 +698,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: true,
                 appName: 'test',
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 1.2,
                 severity: 6
             }
@@ -727,7 +728,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: true,
                 appName: 'test',
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 23,
                 severity: 'error'
             }
@@ -757,7 +758,7 @@ describe('Hapi logging to syslog', () => {
                 tcpTimeout: 5000,
                 rfc3164: true,
                 appName: 'test',
-                dateFormatter: (d) => date.toISOString(),
+                dateFormatter: (date) => date.toISOString(),
                 facility: 23,
                 severity: 6.2
             }
@@ -795,10 +796,10 @@ describe('Hapi logging to syslog', () => {
         const receiver = Net.createServer((client) => {
             client.on('data', (data) => {
                 const message = data.toString();
-		expect(message.search('A request has been invoked!')).to.not.equal(-1);
-		receiver.close();
-		receiver.unref();
-		server.stop();
+                expect(message.search('A request has been invoked!')).to.not.equal(-1);
+                receiver.close();
+                receiver.unref();
+                server.stop();
                 done();
             });
         });
@@ -828,7 +829,7 @@ describe('Hapi logging to syslog', () => {
             }
         }, {
             register: ApplicationRoutes
-	}], (err) => {
+        }], (err) => {
             expect(err).to.be.undefined();
         });
 
@@ -844,7 +845,7 @@ describe('Hapi logging to syslog', () => {
         };
         server.inject(options, (response) => {
             expect(response.statusCode).to.equal(200);
-	    expect(response.result).to.equal('Hello world!');
+            expect(response.result).to.equal('Hello world!');
         });
     });
 
