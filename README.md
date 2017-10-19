@@ -63,18 +63,20 @@ Type: `object`
 Default: `{}`
 
 Valid overrides include: 
+```
+  target:  Defaults to 127.0.0.1
+  syslogHostname:  Defaults to OS hostname
+  transport:  Defaults to 2 which is Udp
+  port:  Defaults to 514
+  tcpTimeout:  Defaults to 10000
+  rfc3164:  Defaults to false
+  appName:  Defaults Node's process.title
+  dateFormatter:  Function defaults to date.toISOString()
+  facility:  Defaults to local0 or 16
+  severity:  Defaults to 6 or Informational
+```
 
-  target: Defaults to 127.0.0.1
-  syslogHostname: Defaults to OS hostname
-  transport: Defaults to 2 which is Udp
-  port: Defaults to 514
-  tcpTimeout: Defaults to 10000
-  rfc3164: Defaults to false
-  appName: Defaults Node's process.title
-  dateFormatter: Function defaults to date.toISOString()
-  facility: Defaults to local0 or 16
-  severity: Defaults to 6 or Informational
-
+Constants:
 ```
 const Transport = {
     Tcp: 1,
