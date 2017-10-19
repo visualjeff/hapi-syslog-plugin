@@ -62,6 +62,52 @@ Registers the plugin to run `onRequest` in the [request lifecycle](http://hapijs
 Type: `object`  
 Default: `{}`
 
+Valid overrides include: 
+
+  target: Defaults to 127.0.0.1
+  syslogHostname: Defaults to OS hostname
+  transport: Defaults to 2 which is Udp
+  port: Defaults to 514
+  tcpTimeout: Defaults to 10000
+  rfc3164: Defaults to false
+  appName: Defaults Node's process.title
+  dateFormatter: Function defaults to date.toISOString()
+  facility: Defaults to local0 or 16
+  severity: Defaults to 6 or Informational
+
+```
+const Transport = {
+    Tcp: 1,
+    Udp: 2
+};
+
+const Facility = {
+    Kernel: 0,
+    User: 1,
+    System: 3,
+    Audit: 13,
+    Alert: 14,
+    Local0: 16,
+    Local1: 17,
+    Local2: 18,
+    Local3: 19,
+    Local4: 20,
+    Local5: 21,
+    Local6: 22,
+    Local7: 23
+};
+
+const Severity = {
+    Emergency: 0,
+    Alert: 1,
+    Critical: 2,
+    Error: 3,
+    Warning: 4,
+    Notice: 5,
+    Informational: 6,
+    Debug: 7
+};
+
 ## License
 
 MIT © [visualjeff](http://github.com/visualjeff)
