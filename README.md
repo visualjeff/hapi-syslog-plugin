@@ -57,7 +57,7 @@ Additionally... See examples directory for sample usage.
 
 Registers the plugin to run `onRequest` in the [request lifecycle](http://hapijs.com/api#request-lifecycle). 
 
-##### options
+#### options
 
 Type: `object`  
 Default: `{}`
@@ -109,6 +109,7 @@ const Severity = {
     Informational: 6,
     Debug: 7
 };
+```
 
 ## License
 
